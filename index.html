@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Deposit Calculator</title>
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="./assets/air-datepicker-3/dist/air-datepicker.css">
+	<script src="./assets/air-datepicker-3/dist/air-datepicker.js"></script>
+	<script type="text/javascript" src="./assets/jquery.js"></script>
+</head>
+<body>
+	<header class="header">
+
+		<div class="rectangle_1">
+			
+		</div>
+
+		<div class="logo-light_1">
+			<a class="logo-link">
+				<img src="./assets/img/logo-light 1.png" alt="IQ DEV" class="header_logo_pic">
+					
+				</img>
+			</a>
+		</div>
+
+		<div class="deposit_calculator">Deposit Calculator</div>
+		
+	</header>
+	<div class="container">
+
+		<div class="head_text">
+			Депозитный калькулятор
+		</div>
+
+		<div class="main_text">
+			<p> Калькулятор депозитов позволяет рассчитать ваши доходы после внесения суммы на счет в банке по опредленному тарифу.</p>
+		</div>
+
+		
+		<form id="feed_beck" method="post" onsubmit="return false">
+				<div class="date_open">
+					<div class="rectangle_2" >
+						<p class="text_3">Дата открытия</p>
+						<input type="text" class="invisible" id="date_open_id">
+					</div>
+				</div>
+				
+
+				<div class="deposit_time">
+					<div class="rectangle_2">
+						<p class="text_1">Срок вклада</p>
+						
+						<select name="momth/ears" class="rectangle_4">
+							<option value="месяц" class="text_2">месяц</option>
+							<option value="год" class="text_2">год</option>
+						</select>
+										
+					</div>
+				</div>
+
+				<div class="sum_deposit">
+					<div class="rectangle_2">
+							<p class="text_1">Сумма вклада</p>
+					</div>
+				</div>
+
+				<div class="percent_deposit">
+					<div class="rectangle_2">
+						<p class="text_1">Процентная ставка, % годовых</p>
+					</div>
+				</div>
+
+				<div class="checkbox">
+					<input type="checkbox" name="" class="rectangle_3" id="checkbox">
+					<div class="text_2">Ежемесячное пополнение вклада</div>
+					
+				</div>
+
+				
+				<button onclick="sendJSON()" class="result">
+					<p class="text_1 dopResult">Рассчитать</p>
+				</button>
+			</form>
+	</div>
+
+	
+	<script src="./assets/air-datepicker-3/dist/air-datepicker.js"></script>
+	<script>new AirDatepicker('#date_open_id');</script>
+	<script type="text/javascript" src="/script.js"></script>
+	
+	<script>
+		function sendJSON() {
+
+			let startDate = document.querySelector('#date_open_id');
+			let sum = document.querySelector('#sum_id');
+			let term = document.querySelector('#term_id');
+			let percent = document.querySelector('#percent_id');
+			let sumAdd = 0;
+			
+
+			const checkbox = document.querySelector('#checkbox');
+
+			if ($('#checkbox').is(':checked')){
+				sumAdd = document.querySelector('#sumAdd_id');
+			}
+
+			if(typeof sumAdd.value == 'undefined') {
+			  	sumAdd = 0;}
+			else {
+			  	sumAdd = sumAdd.value;
+			}
+				
+			// let xhr = new XMLHttpRequest();
+			// let url = "/calc.php";
+			// xhr.open("POST", url, true);
+			// xhr.setRequestHeader("Content-Type", "application/json");
+
+			// xhr.onreadystatechange = function () {
+			// 	if (xhr.readyState === 4 && xhr.status === 200) {
+			// 		console.log(startDate.value, sum.value, term.value, percent.value, sumAdd);
+			//   	}
+			// };
+
+			var dataForm2 = JSON.stringify({   
+						  	"startDate": startDate.value,
+						  	"sum": sum.value,
+							"term": term.value, 
+							"percent": percent.value, 
+							"sumAdd": sumAdd
+			});
+
+			// xhr.send(data);
+
+			$("document").ready(function() {
+
+				$("#feed_beck").on("submit", function(){
+
+					let dataForm = $(this).serialize();
+
+					$.ajax({
+					    url: 'calc.php',
+					    method: "POST",
+					    dataType: 'json',
+					    data: dataForm2 ,
+					    success: function(data) {
+					    	console.log('Отправлено');
+					    	console.log(dataForm2);
+					    	console.log(data);
+
+					    },error: function (jqXHR, exception) {
+							if (jqXHR.status === 0) {
+								alert('Not connect. Verify Network.');
+							} else if (jqXHR.status == 404) {
+								alert('Requested page not found (404).');
+							} else if (jqXHR.status == 500) {
+								alert('Internal Server Error (500).');
+							} else if (exception === 'parsererror') {
+								alert('Requested JSON parse failed.');
+							} else if (exception === 'timeout') {
+								alert('Time out error.');
+							} else if (exception === 'abort') {
+								alert('Ajax request aborted.');
+							} else {
+								alert('Uncaught Error. ' + jqXHR.responseText);
+							}
+				    	}
+					});
+					   
+				})
+
+			})
+
+			
+
+		}
+	</script>
+
+	
+</body>
+</html>
